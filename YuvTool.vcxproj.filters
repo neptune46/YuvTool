@@ -58,6 +58,9 @@
     <ClCompile Include="GeneratedFiles\qrc_yuvtool.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="yuvtool_lib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
