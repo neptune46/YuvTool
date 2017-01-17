@@ -17,8 +17,6 @@ public:
     void finished();
 private:
     QPushButton *openButton;
-    QPushButton *cancelButton;
-    QPushButton *pauseButton;
     QVBoxLayout *mainLayout;
     QList<QLabel *> labels;
     QGridLayout *imagesLayout;

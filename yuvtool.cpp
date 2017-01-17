@@ -3,12 +3,12 @@
 
 #include <qmath.h>
 
-const int imageSize = 100;
+const int imageSize = 800;
 
 QImage scale(const QString &imageFileName)
 {
     QImage image(imageFileName);
-    return image.scaled(QSize(imageSize, imageSize), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    return image.scaled(QSize(imageSize, imageSize), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 YuvTool::YuvTool(QWidget *parent)
@@ -24,18 +24,8 @@ YuvTool::YuvTool(QWidget *parent)
     openButton = new QPushButton(tr("Open Images"));
     connect(openButton, SIGNAL(clicked()), SLOT(open()));
 
-    cancelButton = new QPushButton(tr("Cancel"));
-    cancelButton->setEnabled(false);
-    connect(cancelButton, SIGNAL(clicked()), imageScaling, SLOT(cancel()));
-
-    pauseButton = new QPushButton(tr("Pause/Resume"));
-    pauseButton->setEnabled(false);
-    connect(pauseButton, SIGNAL(clicked()), imageScaling, SLOT(togglePaused()));
-
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(openButton);
-    buttonLayout->addWidget(cancelButton);
-    buttonLayout->addWidget(pauseButton);
     buttonLayout->addStretch();
 
     imagesLayout = new QGridLayout();
@@ -81,9 +71,10 @@ void YuvTool::open()
     // Use mapped to run the thread safe scale function on the files.
     imageScaling->setFuture(QtConcurrent::mapped(files, scale));
 
+    //QImage image(files[0]);
+    //labels[0]->setPixmap(QPixmap::fromImage(image));
+
     openButton->setEnabled(false);
-    cancelButton->setEnabled(true);
-    pauseButton->setEnabled(true);
 }
 
 void YuvTool::showImage(int num)
@@ -94,7 +85,5 @@ void YuvTool::showImage(int num)
 void YuvTool::finished()
 {
     openButton->setEnabled(true);
-    cancelButton->setEnabled(false);
-    pauseButton->setEnabled(false);
 }
 
