@@ -5,9 +5,21 @@
 
 const int imageSize = 800;
 
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h);
+
 QImage scale(const QString &imageFileName)
 {
-    QImage image(imageFileName);
+    const uchar *data = NULL;
+    int width = 480;
+    int height = 360;
+    int bytesPerLine = width *3;
+    QImage::Format format = QImage::Format_RGB888;
+
+    // QImage(const uchar *data, int width, int height, int bytesPerLine, Format format);
+    data = yuv2rgb(imageFileName.toStdString().c_str(), width, height);
+
+    QImage image(data, width, height, bytesPerLine, format);
+    // QImage image(imageFileName);
     return image.scaled(QSize(imageSize, imageSize), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
@@ -54,7 +66,7 @@ void YuvTool::open()
     // Show a file open dialog at QStandardPaths::PicturesLocation.
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Images"),
         QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
-        "*.jpg *.png");
+        "*.jpg *.png *.yuv");
 
     if (files.count() == 0)
         return;
@@ -70,9 +82,6 @@ void YuvTool::open()
 
     // Use mapped to run the thread safe scale function on the files.
     imageScaling->setFuture(QtConcurrent::mapped(files, scale));
-
-    //QImage image(files[0]);
-    //labels[0]->setPixmap(QPixmap::fromImage(image));
 
     openButton->setEnabled(false);
 }
