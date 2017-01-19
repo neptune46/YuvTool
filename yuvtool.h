@@ -13,8 +13,7 @@ public:
     ~YuvTool();
     public Q_SLOTS:
     void open();
-    void showImage(int num);
-    void finished();
+
 private:
     int picWidth;
     int picHeight;
@@ -26,5 +25,4 @@ private:
     QVBoxLayout *mainLayout;
     QList<QLabel *> labels;
     QGridLayout *imagesLayout;
-    QFutureWatcher<QImage> *imageScaling;
 };
