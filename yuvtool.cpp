@@ -95,8 +95,6 @@ void YuvTool::open()
     // Use mapped to run the thread safe scale function on the files.
     //imageScaling->setFuture(QtConcurrent::mapped(files, scale));
 
-    int width = 480;
-    int height = 360;
     const uchar *data = NULL;
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
