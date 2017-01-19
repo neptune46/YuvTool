@@ -9,9 +9,9 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h);
 
 QImage scale(const QString &imageFileName)
 {
-    const uchar *data = NULL;
     int width = 480;
     int height = 360;
+    const uchar *data = NULL;
     int bytesPerLine = width *3;
     QImage::Format format = QImage::Format_RGB888;
 
@@ -36,8 +36,17 @@ YuvTool::YuvTool(QWidget *parent)
     openButton = new QPushButton(tr("Open Images"));
     connect(openButton, SIGNAL(clicked()), SLOT(open()));
 
+    labelWidth = new QLabel(tr("Width:"));
+    labelHeight = new QLabel(tr("Height:"));
+    editWidth = new QLineEdit("480");
+    editHeight = new QLineEdit("360");
+
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(openButton);
+    buttonLayout->addWidget(labelWidth);
+    buttonLayout->addWidget(editWidth);
+    buttonLayout->addWidget(labelHeight);
+    buttonLayout->addWidget(editHeight);
     buttonLayout->addStretch();
 
     imagesLayout = new QGridLayout();
@@ -71,6 +80,9 @@ void YuvTool::open()
     if (files.count() == 0)
         return;
 
+    picWidth = editWidth->text().toInt();
+    picHeight = editHeight->text().toInt();
+
     // Do a simple layout.
     qDeleteAll(labels);
     labels.clear();
@@ -81,7 +93,18 @@ void YuvTool::open()
     labels.append(imageLabel);
 
     // Use mapped to run the thread safe scale function on the files.
-    imageScaling->setFuture(QtConcurrent::mapped(files, scale));
+    //imageScaling->setFuture(QtConcurrent::mapped(files, scale));
+
+    int width = 480;
+    int height = 360;
+    const uchar *data = NULL;
+    int bytesPerLine = picWidth * 3;
+    QImage::Format format = QImage::Format_RGB888;
+
+    data = yuv2rgb(files[0].toStdString().c_str(), picWidth, picHeight);
+    QImage image(data, picWidth, picHeight, bytesPerLine, format);
+
+    labels[0]->setPixmap(QPixmap::fromImage(image));
 
     openButton->setEnabled(false);
 }

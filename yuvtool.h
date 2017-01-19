@@ -16,7 +16,13 @@ public:
     void showImage(int num);
     void finished();
 private:
+    int picWidth;
+    int picHeight;
     QPushButton *openButton;
+    QLabel *labelWidth;
+    QLabel *labelHeight;
+    QLineEdit *editWidth;
+    QLineEdit *editHeight;
     QVBoxLayout *mainLayout;
     QList<QLabel *> labels;
     QGridLayout *imagesLayout;
