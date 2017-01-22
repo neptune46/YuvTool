@@ -25,12 +25,12 @@ private:
     QHBoxLayout *inputLayout;
     QGroupBox *inputGroupBox;
 
-    QLabel *imageLabel;
     QLabel *previewLabel;
+    QLabel *imageLabel;
     QGroupBox *previewGroupBox;
     QGroupBox *imageGroupBox;
-    QGroupBox *displayGroupBox;
-    QGridLayout *displayLayout;
+    QGridLayout *previewLayout;
+    QGridLayout *imageLayout;
 
     QVBoxLayout *mainLayout;
     QList<QLabel *> labels;

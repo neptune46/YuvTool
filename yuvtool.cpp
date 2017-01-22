@@ -38,15 +38,14 @@ YuvTool::YuvTool(QWidget *parent)
     imageLabel->setFixedSize(400, 400);
     previewGroupBox = new QGroupBox(tr("Preview"));
     imageGroupBox = new QGroupBox(tr("Image"));
-
-    displayGroupBox = new QGroupBox();
-    displayLayout = new QGridLayout();
-    //displayLayout->addWidget(previewGroupBox, 0, 0, 4, 1);
-    //displayLayout->addWidget(imageGroupBox, 0, 1, 4, 3);
-    displayLayout->addWidget(previewLabel, 0, 0, 1, 1);
-    displayLayout->addWidget(imageLabel, 0, 1, 1, 3);
-    displayGroupBox->setLayout(displayLayout);
-    mainLayout->addWidget(displayGroupBox);
+    previewLayout = new QGridLayout();
+    imageLayout = new QGridLayout();
+    previewLayout->addWidget(previewLabel);
+    imageLayout->addWidget(imageLabel);
+    previewGroupBox->setLayout(previewLayout);
+    imageGroupBox->setLayout(imageLayout);
+    mainLayout->addWidget(previewGroupBox);
+    mainLayout->addWidget(imageGroupBox);
     mainLayout->addStretch();
 
     setLayout(mainLayout);
