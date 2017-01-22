@@ -22,6 +22,8 @@ private:
     QLabel *labelHeight;
     QLineEdit *editWidth;
     QLineEdit *editHeight;
+    QHBoxLayout *inputLayout;
+    QGroupBox *inputGroupBox;
     QVBoxLayout *mainLayout;
     QList<QLabel *> labels;
     QGridLayout *imagesLayout;

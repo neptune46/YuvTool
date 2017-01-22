@@ -13,6 +13,9 @@ YuvTool::YuvTool(QWidget *parent)
     setWindowTitle(tr("Image loading and scaling example"));
     resize(800, 600);
 
+    inputGroupBox = new QGroupBox(tr("Input Area"));
+    inputLayout = new QHBoxLayout();
+
     openButton = new QPushButton(tr("Open Images"));
     connect(openButton, SIGNAL(clicked()), SLOT(open()));
 
@@ -21,18 +24,20 @@ YuvTool::YuvTool(QWidget *parent)
     editWidth = new QLineEdit("480");
     editHeight = new QLineEdit("360");
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
-    buttonLayout->addWidget(openButton);
-    buttonLayout->addWidget(labelWidth);
-    buttonLayout->addWidget(editWidth);
-    buttonLayout->addWidget(labelHeight);
-    buttonLayout->addWidget(editHeight);
-    buttonLayout->addStretch();
+    inputLayout->addWidget(openButton);
+    inputLayout->addWidget(labelWidth);
+    inputLayout->addWidget(editWidth);
+    inputLayout->addWidget(labelHeight);
+    inputLayout->addWidget(editHeight);
+    inputLayout->addStretch();
+
+    inputGroupBox->setLayout(inputLayout);
 
     imagesLayout = new QGridLayout();
 
     mainLayout = new QVBoxLayout();
-    mainLayout->addLayout(buttonLayout);
+    mainLayout->addWidget(inputGroupBox);
+    //mainLayout->addLayout(inputLayout);
     mainLayout->addLayout(imagesLayout);
     mainLayout->addStretch();
     setLayout(mainLayout);
