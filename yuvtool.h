@@ -24,7 +24,14 @@ private:
     QLineEdit *editHeight;
     QHBoxLayout *inputLayout;
     QGroupBox *inputGroupBox;
+
+    QLabel *imageLabel;
+    QLabel *previewLabel;
+    QGroupBox *previewGroupBox;
+    QGroupBox *imageGroupBox;
+    QGroupBox *displayGroupBox;
+    QGridLayout *displayLayout;
+
     QVBoxLayout *mainLayout;
     QList<QLabel *> labels;
-    QGridLayout *imagesLayout;
 };

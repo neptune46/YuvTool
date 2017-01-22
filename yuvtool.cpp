@@ -13,33 +13,42 @@ YuvTool::YuvTool(QWidget *parent)
     setWindowTitle(tr("Image loading and scaling example"));
     resize(800, 600);
 
+    mainLayout = new QVBoxLayout();
+
     inputGroupBox = new QGroupBox(tr("Input Area"));
     inputLayout = new QHBoxLayout();
-
     openButton = new QPushButton(tr("Open Images"));
     connect(openButton, SIGNAL(clicked()), SLOT(open()));
-
     labelWidth = new QLabel(tr("Width:"));
     labelHeight = new QLabel(tr("Height:"));
     editWidth = new QLineEdit("480");
     editHeight = new QLineEdit("360");
-
     inputLayout->addWidget(openButton);
     inputLayout->addWidget(labelWidth);
     inputLayout->addWidget(editWidth);
     inputLayout->addWidget(labelHeight);
     inputLayout->addWidget(editHeight);
     inputLayout->addStretch();
-
     inputGroupBox->setLayout(inputLayout);
-
-    imagesLayout = new QGridLayout();
-
-    mainLayout = new QVBoxLayout();
     mainLayout->addWidget(inputGroupBox);
-    //mainLayout->addLayout(inputLayout);
-    mainLayout->addLayout(imagesLayout);
+
+    previewLabel = new QLabel;
+    imageLabel = new QLabel;
+    previewLabel->setFixedSize(100, 100);
+    imageLabel->setFixedSize(400, 400);
+    previewGroupBox = new QGroupBox(tr("Preview"));
+    imageGroupBox = new QGroupBox(tr("Image"));
+
+    displayGroupBox = new QGroupBox();
+    displayLayout = new QGridLayout();
+    //displayLayout->addWidget(previewGroupBox, 0, 0, 4, 1);
+    //displayLayout->addWidget(imageGroupBox, 0, 1, 4, 3);
+    displayLayout->addWidget(previewLabel, 0, 0, 1, 1);
+    displayLayout->addWidget(imageLabel, 0, 1, 1, 3);
+    displayGroupBox->setLayout(displayLayout);
+    mainLayout->addWidget(displayGroupBox);
     mainLayout->addStretch();
+
     setLayout(mainLayout);
 }
 
@@ -64,10 +73,10 @@ void YuvTool::open()
     qDeleteAll(labels);
     labels.clear();
 
-    QLabel *imageLabel = new QLabel;
+    /*QLabel *imageLabel = new QLabel;
     imageLabel->setFixedSize(imageSize, imageSize);
     imagesLayout->addWidget(imageLabel, 0, 0);
-    labels.append(imageLabel);
+    labels.append(imageLabel);*/
 
     const uchar *data = NULL;
     int bytesPerLine = picWidth * 3;
@@ -76,7 +85,7 @@ void YuvTool::open()
     data = yuv2rgb(files[0].toStdString().c_str(), picWidth, picHeight);
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
-    labels[0]->setPixmap(QPixmap::fromImage(image));
+    imageLabel->setPixmap(QPixmap::fromImage(image));
 
     openButton->setEnabled(true);
 }
