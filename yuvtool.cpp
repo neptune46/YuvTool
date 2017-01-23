@@ -10,7 +10,7 @@ YuvTool::YuvTool(QWidget *parent)
 {
     setWindowTitle(tr("Image loading and scaling example"));
     QSize resolution = QGuiApplication::primaryScreen()->availableSize();
-    resize(QGuiApplication::primaryScreen()->availableSize() * 6 / 10);
+    resize(QGuiApplication::primaryScreen()->availableSize() * 8 / 10);
 
     mainLayout = new QVBoxLayout();
 
@@ -44,12 +44,11 @@ YuvTool::YuvTool(QWidget *parent)
     imageGroupBox = new QGroupBox(tr("Image"));
     imageLayout = new QVBoxLayout();
     imageLabel = new QLabel;
-    QSize imageLableSize = imageLabel->sizeHint();
-    imageLabel->setFixedSize(imageLabel->sizeHint());
     imageLayout->addStretch();
     imageLayout->addWidget(imageLabel);
     imageGroupBox->setLayout(imageLayout);
     mainLayout->addWidget(imageGroupBox);
+    //mainLayout->addStretch();
 
     setLayout(mainLayout);
 }
