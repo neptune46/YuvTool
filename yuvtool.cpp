@@ -44,11 +44,11 @@ YuvTool::YuvTool(QWidget *parent)
     imageGroupBox = new QGroupBox(tr("Image"));
     imageLayout = new QVBoxLayout();
     imageLabel = new QLabel;
-    imageLayout->addStretch();
+    imageLabel->setAlignment(Qt::AlignCenter);
     imageLayout->addWidget(imageLabel);
+    imageLayout->addStretch();
     imageGroupBox->setLayout(imageLayout);
     mainLayout->addWidget(imageGroupBox);
-    //mainLayout->addStretch();
 
     setLayout(mainLayout);
 }
