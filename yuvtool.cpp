@@ -70,15 +70,6 @@ void YuvTool::open()
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
 
-    // Do a simple layout.
-    qDeleteAll(labels);
-    labels.clear();
-
-    /*QLabel *imageLabel = new QLabel;
-    imageLabel->setFixedSize(imageSize, imageSize);
-    imagesLayout->addWidget(imageLabel, 0, 0);
-    labels.append(imageLabel);*/
-
     const uchar *data = NULL;
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;

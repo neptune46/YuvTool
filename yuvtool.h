@@ -34,5 +34,4 @@ private:
     QLabel *imageLabel;
 
     QVBoxLayout *mainLayout;
-    QList<QLabel *> labels;
 };
