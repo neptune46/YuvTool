@@ -31,6 +31,7 @@ private:
 
     QGroupBox *imageGroupBox;
     QVBoxLayout *imageLayout;
+    QScrollArea *scrollArea;
     QLabel *imageLabel;
 
     QVBoxLayout *mainLayout;

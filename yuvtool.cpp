@@ -21,8 +21,8 @@ YuvTool::YuvTool(QWidget *parent)
     connect(openButton, SIGNAL(clicked()), SLOT(open()));
     labelWidth = new QLabel(tr("Width:"));
     labelHeight = new QLabel(tr("Height:"));
-    editWidth = new QLineEdit("480");
-    editHeight = new QLineEdit("360");
+    editWidth = new QLineEdit("1920");
+    editHeight = new QLineEdit("1080");
     inputLayout->addWidget(openButton);
     inputLayout->addWidget(labelWidth);
     inputLayout->addWidget(editWidth);
@@ -43,10 +43,13 @@ YuvTool::YuvTool(QWidget *parent)
     // image
     imageGroupBox = new QGroupBox(tr("Image"));
     imageLayout = new QVBoxLayout();
+    scrollArea = new QScrollArea;
     imageLabel = new QLabel;
     imageLabel->setAlignment(Qt::AlignCenter);
-    imageLayout->addWidget(imageLabel);
-    imageLayout->addStretch();
+    scrollArea->setVisible(true);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(imageLabel);
+    imageLayout->addWidget(scrollArea);
     imageGroupBox->setLayout(imageLayout);
     mainLayout->addWidget(imageGroupBox);
 
@@ -78,6 +81,8 @@ void YuvTool::open()
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));
+    
+    scrollArea->setVisible(true);
 
     openButton->setEnabled(true);
 }
