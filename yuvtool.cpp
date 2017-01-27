@@ -8,9 +8,9 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h);
 YuvTool::YuvTool(QWidget *parent)
     : QWidget(parent)
 {
-    setWindowTitle(tr("Image loading and scaling example"));
+    setWindowTitle(tr("YuvTool"));
     QSize resolution = QGuiApplication::primaryScreen()->availableSize();
-    resize(QGuiApplication::primaryScreen()->availableSize() * 8 / 10);
+    resize(QGuiApplication::primaryScreen()->availableSize() * 6 / 10);
 
     mainLayout = new QVBoxLayout();
 
@@ -19,11 +19,17 @@ YuvTool::YuvTool(QWidget *parent)
     inputLayout = new QHBoxLayout();
     openButton = new QPushButton(tr("Open Images"));
     connect(openButton, SIGNAL(clicked()), SLOT(open()));
+    labelFormat = new QLabel(tr("Format"));
     labelWidth = new QLabel(tr("Width:"));
     labelHeight = new QLabel(tr("Height:"));
-    editWidth = new QLineEdit("1920");
-    editHeight = new QLineEdit("1080");
+    comboBoxFormat = new QComboBox;
+    comboBoxFormat->addItem(tr("YUV420"));
+    comboBoxFormat->addItem(tr("NV12"));
+    editWidth = new QLineEdit("480");
+    editHeight = new QLineEdit("360");
     inputLayout->addWidget(openButton);
+    inputLayout->addWidget(labelFormat);
+    inputLayout->addWidget(comboBoxFormat);
     inputLayout->addWidget(labelWidth);
     inputLayout->addWidget(editWidth);
     inputLayout->addWidget(labelHeight);

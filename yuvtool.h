@@ -4,6 +4,7 @@
 
 #include <QtWidgets>
 #include <QtConcurrent>
+#include <QComboBox>
 
 class YuvTool : public QWidget
 {
@@ -18,8 +19,10 @@ private:
     int picWidth;
     int picHeight;
     QPushButton *openButton;
+    QLabel *labelFormat;
     QLabel *labelWidth;
     QLabel *labelHeight;
+    QComboBox *comboBoxFormat;
     QLineEdit *editWidth;
     QLineEdit *editHeight;
     QHBoxLayout *inputLayout;
