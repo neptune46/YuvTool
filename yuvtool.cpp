@@ -3,7 +3,7 @@
 
 #include <qmath.h>
 
-const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h);
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt);
 
 YuvTool::YuvTool(QWidget *parent)
     : QWidget(parent)
@@ -78,12 +78,15 @@ void YuvTool::open()
 
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
+    yuvFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
+    QByteArray ba = yuvFormat.toLatin1();
+    char *yuvFmt = ba.data();
 
     const uchar *data = NULL;
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
 
-    data = yuv2rgb(files[0].toStdString().c_str(), picWidth, picHeight);
+    data = yuv2rgb(files[0].toStdString().c_str(), picWidth, picHeight, yuvFmt);
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));

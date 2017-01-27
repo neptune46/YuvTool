@@ -10,11 +10,24 @@
 * @example scaling_video.c
 */
 
+#include <map>
+
+using namespace std;
+
 extern "C" {
 #include <libavutil/imgutils.h>
 #include <libavutil/parseutils.h>
 #include <libswscale/swscale.h>
 }
+
+std::map<string, AVPixelFormat> fmtMap;
+
+struct MapInit {
+    MapInit() {
+        fmtMap["YUV420"] = AV_PIX_FMT_YUV420P;
+        fmtMap["NV12"] = AV_PIX_FMT_NV12;
+    }
+} mapInit;
 
 static void load_yuv_image(const char *filename, uint8_t *data[4], int linesize[4],
     int width, int height, int frame_index)
@@ -28,12 +41,14 @@ static void load_yuv_image(const char *filename, uint8_t *data[4], int linesize[
     }
 }
 
-const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h)
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt)
 {
     uint8_t *src_data[4], *dst_data[4];
     int src_linesize[4], dst_linesize[4];
     int dst_w = src_w, dst_h = src_h;
-    enum AVPixelFormat src_pix_fmt = AV_PIX_FMT_NV12, dst_pix_fmt = AV_PIX_FMT_RGB24;
+    string srcFormat = src_fmt;
+    enum AVPixelFormat src_pix_fmt = fmtMap[srcFormat];
+    enum AVPixelFormat dst_pix_fmt = AV_PIX_FMT_RGB24;
     const char *dst_size = NULL;
     int dst_bufsize;
     struct SwsContext *sws_ctx;

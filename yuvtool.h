@@ -18,6 +18,7 @@ public:
 private:
     int picWidth;
     int picHeight;
+    QString yuvFormat;
     QPushButton *openButton;
     QLabel *labelFormat;
     QLabel *labelWidth;
