@@ -18,6 +18,7 @@ extern "C" {
 #include <libavutil/imgutils.h>
 #include <libavutil/parseutils.h>
 #include <libswscale/swscale.h>
+#include <libavformat/avformat.h>
 }
 
 std::map<string, AVPixelFormat> fmtMap;
@@ -29,16 +30,114 @@ struct MapInit {
     }
 } mapInit;
 
+int ff_load_image(uint8_t *data[4], int linesize[4],
+    int *w, int *h, enum AVPixelFormat *pix_fmt,
+    const char *filename, void *log_ctx)
+{
+    AVInputFormat *iformat = NULL;
+    AVFormatContext *format_ctx = NULL;
+    AVCodec *codec;
+    AVCodecContext *codec_ctx;
+    AVFrame *frame;
+    int frame_decoded, ret = 0;
+    AVPacket pkt;
+    AVDictionary *opt = NULL;
+
+    av_init_packet(&pkt);
+
+    av_register_all();
+
+    iformat = av_find_input_format("image2");
+    if ((ret = avformat_open_input(&format_ctx, filename, iformat, NULL)) < 0) {
+        av_log(log_ctx, AV_LOG_ERROR,
+            "Failed to open input file '%s'\n", filename);
+        return ret;
+    }
+
+    if ((ret = avformat_find_stream_info(format_ctx, NULL)) < 0) {
+        av_log(log_ctx, AV_LOG_ERROR, "Find stream info failed\n");
+        return ret;
+    }
+
+    codec_ctx = format_ctx->streams[0]->codec;
+    codec = avcodec_find_decoder(codec_ctx->codec_id);
+    if (!codec) {
+        av_log(log_ctx, AV_LOG_ERROR, "Failed to find codec\n");
+        ret = AVERROR(EINVAL);
+        goto end;
+    }
+
+    av_dict_set(&opt, "thread_type", "slice", 0);
+    if ((ret = avcodec_open2(codec_ctx, codec, &opt)) < 0) {
+        av_log(log_ctx, AV_LOG_ERROR, "Failed to open codec\n");
+        goto end;
+    }
+
+    if (!(frame = av_frame_alloc())) {
+        av_log(log_ctx, AV_LOG_ERROR, "Failed to alloc frame\n");
+        ret = AVERROR(ENOMEM);
+        goto end;
+    }
+
+    ret = av_read_frame(format_ctx, &pkt);
+    if (ret < 0) {
+        av_log(log_ctx, AV_LOG_ERROR, "Failed to read frame from file\n");
+        goto end;
+    }
+
+    ret = avcodec_decode_video2(codec_ctx, frame, &frame_decoded, &pkt);
+    if (ret < 0 || !frame_decoded) {
+        av_log(log_ctx, AV_LOG_ERROR, "Failed to decode image from file\n");
+        if (ret >= 0)
+            ret = -1;
+        goto end;
+    }
+
+    *w = frame->width;
+    *h = frame->height;
+    *pix_fmt = (AVPixelFormat)frame->format;
+
+    if ((ret = av_image_alloc(data, linesize, *w, *h, *pix_fmt, 16)) < 0)
+        goto end;
+    ret = 0;
+
+    av_image_copy(data, linesize, (const uint8_t **)frame->data, frame->linesize, *pix_fmt, *w, *h);
+
+end:
+    av_packet_unref(&pkt);
+    avcodec_close(codec_ctx);
+    avformat_close_input(&format_ctx);
+    av_frame_free(&frame);
+    av_dict_free(&opt);
+
+    if (ret < 0)
+        av_log(log_ctx, AV_LOG_ERROR, "Error loading image file '%s'\n", filename);
+    return ret;
+}
+
 static void load_yuv_image(const char *filename, uint8_t *data[4], int linesize[4],
-    int width, int height, int frame_index)
+    int width, int height, AVPixelFormat pix_fmt, int frame_index)
 {
     FILE *fp;
 
     fopen_s(&fp, filename, "rb");
     if (fp) {
-        fread_s(data[0], width * height, width * height, 1, fp);
-        fread_s(data[1], width * height / 2, width * height / 2, 1, fp);
+        switch (pix_fmt)
+        {
+        case AV_PIX_FMT_NV12:
+            fread_s(data[0], width * height, width * height, 1, fp);
+            fread_s(data[1], width * height / 2, width * height / 2, 1, fp);
+            break;
+        case AV_PIX_FMT_YUV420P:
+            fread_s(data[0], width * height, width * height, 1, fp);
+            fread_s(data[1], width * height / 4, width * height / 4, 1, fp);
+            fread_s(data[2], width * height / 4, width * height / 4, 1, fp);
+            break;
+        default:
+            break;
+        }
     }
+    fclose(fp);
 }
 
 const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt)
@@ -84,7 +183,7 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_f
     dst_bufsize = ret;
 
     /* generate synthetic video */
-    load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, 0);
+    load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, 0);
 
     /* convert to destination format */
     sws_scale(sws_ctx, (const uint8_t * const*)src_data,
