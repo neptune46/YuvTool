@@ -60,6 +60,8 @@ YuvTool::YuvTool(QWidget *parent)
     mainLayout->addWidget(imageGroupBox);
 
     setLayout(mainLayout);
+
+    connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshImage()));
 }
 
 YuvTool::~YuvTool()
@@ -76,6 +78,17 @@ void YuvTool::open()
     if (files.count() == 0)
         return;
 
+    yuvFilePath = files[0];
+
+    refreshImage();
+
+    scrollArea->setVisible(true);
+
+    openButton->setEnabled(true);
+}
+
+void YuvTool::refreshImage()
+{
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
     yuvFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
@@ -86,13 +99,8 @@ void YuvTool::open()
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
 
-    data = yuv2rgb(files[0].toStdString().c_str(), picWidth, picHeight, yuvFmt);
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFmt);
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));
-    
-    scrollArea->setVisible(true);
-
-    openButton->setEnabled(true);
 }
-

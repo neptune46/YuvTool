@@ -14,8 +14,10 @@ public:
     ~YuvTool();
     public Q_SLOTS:
     void open();
+    void refreshImage();
 
 private:
+    QString yuvFilePath;
     int picWidth;
     int picHeight;
     QString yuvFormat;
