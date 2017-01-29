@@ -61,9 +61,9 @@ YuvTool::YuvTool(QWidget *parent)
 
     setLayout(mainLayout);
 
-    connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshImage()));
-    connect(editWidth, SIGNAL(returnPressed()), SLOT(refreshImage()));
-    connect(editHeight, SIGNAL(returnPressed()), SLOT(refreshImage()));
+    connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshDisplay()));
+    connect(editWidth, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
+    connect(editHeight, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
 }
 
 YuvTool::~YuvTool()
@@ -82,11 +82,7 @@ void YuvTool::open()
 
     yuvFilePath = files[0];
 
-    getYuvProperty();
-
-    refreshImage();
-
-    refreshPreview();
+    refreshDisplay();
 
     scrollArea->setVisible(true);
 
@@ -100,7 +96,15 @@ void YuvTool::getYuvProperty()
     QString cbFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
     QByteArray ba = cbFormat.toLatin1();
     int length = strlen(ba.data());
+    memset(yuvFormat, 0, MAX_FORMAT_LENGTH);
     memcpy_s(yuvFormat, length, ba.data(), length);
+}
+
+void YuvTool::refreshDisplay()
+{
+    getYuvProperty();
+    refreshImage();
+    refreshPreview();
 }
 
 void YuvTool::refreshImage()

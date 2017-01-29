@@ -17,6 +17,7 @@ public:
     public Q_SLOTS:
     void open();
     void getYuvProperty();
+    void refreshDisplay();
     void refreshPreview();
     void refreshImage();
 
