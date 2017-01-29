@@ -62,6 +62,8 @@ YuvTool::YuvTool(QWidget *parent)
     setLayout(mainLayout);
 
     connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshImage()));
+    connect(editWidth, SIGNAL(returnPressed()), SLOT(refreshImage()));
+    connect(editHeight, SIGNAL(returnPressed()), SLOT(refreshImage()));
 }
 
 YuvTool::~YuvTool()
