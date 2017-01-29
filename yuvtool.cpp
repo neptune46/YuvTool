@@ -82,6 +82,8 @@ void YuvTool::open()
 
     yuvFilePath = files[0];
 
+    getYuvProperty();
+
     refreshImage();
 
     refreshPreview();
@@ -91,8 +93,7 @@ void YuvTool::open()
     openButton->setEnabled(true);
 }
 
-
-void YuvTool::refreshImage()
+void YuvTool::getYuvProperty()
 {
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
@@ -100,7 +101,10 @@ void YuvTool::refreshImage()
     QByteArray ba = cbFormat.toLatin1();
     int length = strlen(ba.data());
     memcpy_s(yuvFormat, length, ba.data(), length);
+}
 
+void YuvTool::refreshImage()
+{
     const uchar *data = NULL;
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
@@ -113,6 +117,25 @@ void YuvTool::refreshImage()
 
 void YuvTool::refreshPreview()
 {
+    const uchar *data = NULL;
+    QImage::Format format = QImage::Format_RGB888;
 
+    int previewWidth, previewHeight;
+    if (picWidth > picHeight)
+    {
+        previewWidth = 100;
+        previewHeight = (picHeight * previewWidth) / picWidth;
+    } 
+    else
+    {
+        previewHeight = 100;
+        previewWidth = (picWidth * previewHeight) / picHeight;
+    }
+    int bytesPerLine = previewWidth * 3;
+
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, 0);
+    QImage image(data, previewWidth, previewHeight, bytesPerLine, format);
+
+    previewLabel->setPixmap(QPixmap::fromImage(image));
 }
 

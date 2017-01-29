@@ -16,6 +16,7 @@ public:
     ~YuvTool();
     public Q_SLOTS:
     void open();
+    void getYuvProperty();
     void refreshPreview();
     void refreshImage();
 
