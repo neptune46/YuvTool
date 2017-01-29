@@ -3,7 +3,7 @@
 
 #include <qmath.h>
 
-const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt);
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt, int dst_w, int dst_h, int idx_frame);
 
 YuvTool::YuvTool(QWidget *parent)
     : QWidget(parent)
@@ -84,25 +84,35 @@ void YuvTool::open()
 
     refreshImage();
 
+    refreshPreview();
+
     scrollArea->setVisible(true);
 
     openButton->setEnabled(true);
 }
 
+
 void YuvTool::refreshImage()
 {
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
-    yuvFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
-    QByteArray ba = yuvFormat.toLatin1();
-    char *yuvFmt = ba.data();
+    QString cbFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
+    QByteArray ba = cbFormat.toLatin1();
+    int length = strlen(ba.data());
+    memcpy_s(yuvFormat, length, ba.data(), length);
 
     const uchar *data = NULL;
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
 
-    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFmt);
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, picWidth, picHeight, 0);
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));
 }
+
+void YuvTool::refreshPreview()
+{
+
+}
+

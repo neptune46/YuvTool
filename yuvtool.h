@@ -6,6 +6,8 @@
 #include <QtConcurrent>
 #include <QComboBox>
 
+#define MAX_FORMAT_LENGTH 256
+
 class YuvTool : public QWidget
 {
     Q_OBJECT
@@ -14,13 +16,15 @@ public:
     ~YuvTool();
     public Q_SLOTS:
     void open();
+    void refreshPreview();
     void refreshImage();
 
 private:
     QString yuvFilePath;
     int picWidth;
     int picHeight;
-    QString yuvFormat;
+    char yuvFormat[MAX_FORMAT_LENGTH];
+
     QPushButton *openButton;
     QLabel *labelFormat;
     QLabel *labelWidth;
@@ -34,6 +38,7 @@ private:
     QGroupBox *previewGroupBox;
     QVBoxLayout *previewLayout;
     QLabel *previewLabel;
+    QList<QLabel *> previewLables;
 
     QGroupBox *imageGroupBox;
     QVBoxLayout *imageLayout;

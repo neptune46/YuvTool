@@ -115,36 +115,59 @@ end:
     return ret;
 }
 
-static void load_yuv_image(const char *filename, uint8_t *data[4], int linesize[4],
+int load_yuv_image(const char *filename, uint8_t *data[4], int linesize[4],
     int width, int height, AVPixelFormat pix_fmt, int frame_index)
 {
     FILE *fp;
+    int file_size;
+    int frame_size;
 
     fopen_s(&fp, filename, "rb");
-    if (fp) {
-        switch (pix_fmt)
-        {
-        case AV_PIX_FMT_NV12:
-            fread_s(data[0], width * height, width * height, 1, fp);
-            fread_s(data[1], width * height / 2, width * height / 2, 1, fp);
-            break;
-        case AV_PIX_FMT_YUV420P:
-            fread_s(data[0], width * height, width * height, 1, fp);
-            fread_s(data[1], width * height / 4, width * height / 4, 1, fp);
-            fread_s(data[2], width * height / 4, width * height / 4, 1, fp);
-            break;
-        default:
-            break;
-        }
+
+    if (!fp) {
+        return -1;
     }
+
+    fseek(fp, 0, SEEK_END);
+    file_size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    switch (pix_fmt)
+    {
+    case AV_PIX_FMT_NV12:
+        frame_size = width * height + width * height / 2;
+        if ((file_size - frame_size * frame_index) < frame_size) {
+            fclose(fp);
+            return -2;
+        }
+        fseek(fp, frame_size * frame_index, SEEK_SET);
+        fread_s(data[0], width * height, width * height, 1, fp);
+        fread_s(data[1], width * height / 2, width * height / 2, 1, fp);
+        break;
+    case AV_PIX_FMT_YUV420P:
+        frame_size = width * height + width / 2 * height / 2 + width / 2 * height / 2;
+        if ((file_size - frame_size * frame_index) < frame_size) {
+            fclose(fp);
+            return -2;
+        }
+        fseek(fp, frame_size * frame_index, SEEK_SET);
+        fread_s(data[0], width * height, width * height, 1, fp);
+        fread_s(data[1], width / 2 * height / 2, width / 2 * height / 2, 1, fp);
+        fread_s(data[2], width / 2 * height / 2, width / 2 * height / 2, 1, fp);
+        break;
+    default:
+        break;
+    }
+
     fclose(fp);
+    return 0;
 }
 
-const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt)
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt, int dst_w, int dst_h, int frame_idx)
 {
-    uint8_t *src_data[4], *dst_data[4];
+    uint8_t *src_data[4] = {};
+    uint8_t *dst_data[4] = {};
     int src_linesize[4], dst_linesize[4];
-    int dst_w = src_w, dst_h = src_h;
     string srcFormat = src_fmt;
     enum AVPixelFormat src_pix_fmt = fmtMap[srcFormat];
     enum AVPixelFormat dst_pix_fmt = AV_PIX_FMT_RGB24;
@@ -182,8 +205,10 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_f
     }
     dst_bufsize = ret;
 
-    /* generate synthetic video */
-    load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, 0);
+    if ((ret = load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, frame_idx)) < 0) {
+        fprintf(stderr, "Cannot load source yuv file\n");
+        goto end;
+    }
 
     /* convert to destination format */
     sws_scale(sws_ctx, (const uint8_t * const*)src_data,
