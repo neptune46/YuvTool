@@ -18,7 +18,6 @@ YuvTool::YuvTool(QWidget *parent)
     inputGroupBox = new QGroupBox(tr("Input Area"));
     inputLayout = new QHBoxLayout();
     openButton = new QPushButton(tr("Open Images"));
-    connect(openButton, SIGNAL(clicked()), SLOT(open()));
     labelFormat = new QLabel(tr("Format"));
     labelWidth = new QLabel(tr("Width:"));
     labelHeight = new QLabel(tr("Height:"));
@@ -39,10 +38,11 @@ YuvTool::YuvTool(QWidget *parent)
 
     // preview
     previewGroupBox = new QGroupBox(tr("Preview"));
-    previewLayout = new QVBoxLayout();
-    previewLabel = new QLabel;
-    previewLabel->setFixedSize(100, 100);
-    previewLayout->addWidget(previewLabel);
+    previewLayout = new QHBoxLayout();
+    QLabel *label = new QLabel;
+    label->setFixedSize(PREVIEW_SIZE, PREVIEW_SIZE);
+    previewLayout->addWidget(label);
+    previewLabels.append(label);
     previewGroupBox->setLayout(previewLayout);
     mainLayout->addWidget(previewGroupBox);
 
@@ -61,6 +61,7 @@ YuvTool::YuvTool(QWidget *parent)
 
     setLayout(mainLayout);
 
+    connect(openButton, SIGNAL(clicked()), SLOT(open()));
     connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshDisplay()));
     connect(editWidth, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
     connect(editHeight, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
@@ -123,23 +124,34 @@ void YuvTool::refreshPreview()
 {
     const uchar *data = NULL;
     QImage::Format format = QImage::Format_RGB888;
+    int indexFrame = 0;
 
     int previewWidth, previewHeight;
     if (picWidth > picHeight)
     {
-        previewWidth = 100;
+        previewWidth = PREVIEW_SIZE;
         previewHeight = (picHeight * previewWidth) / picWidth;
     } 
     else
     {
-        previewHeight = 100;
+        previewHeight = PREVIEW_SIZE;
         previewWidth = (picWidth * previewHeight) / picHeight;
     }
     int bytesPerLine = previewWidth * 3;
 
-    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, 0);
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame++);
     QImage image(data, previewWidth, previewHeight, bytesPerLine, format);
+    previewLabels[0]->setPixmap(QPixmap::fromImage(image));
 
-    previewLabel->setPixmap(QPixmap::fromImage(image));
+    while ((data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame)) != NULL)
+    {
+        QImage image2(data, previewWidth, previewHeight, bytesPerLine, format);
+        QLabel *label = new QLabel;
+        label->setFixedSize(PREVIEW_SIZE, PREVIEW_SIZE);
+        previewLayout->addWidget(label);
+        previewLabels.append(label);
+        previewLabels[indexFrame]->setPixmap(QPixmap::fromImage(image2));
+        indexFrame++;
+    }
 }
 

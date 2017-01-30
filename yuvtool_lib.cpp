@@ -197,6 +197,11 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_f
         goto end;
     }
 
+    if ((ret = load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, frame_idx)) < 0) {
+        fprintf(stderr, "Cannot load source yuv file\n");
+        goto end;
+    }
+
     /* buffer is going to be written to rawvideo file, no alignment */
     if ((ret = av_image_alloc(dst_data, dst_linesize,
         dst_w, dst_h, dst_pix_fmt, 1)) < 0) {
@@ -204,11 +209,6 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_f
         goto end;
     }
     dst_bufsize = ret;
-
-    if ((ret = load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, frame_idx)) < 0) {
-        fprintf(stderr, "Cannot load source yuv file\n");
-        goto end;
-    }
 
     /* convert to destination format */
     sws_scale(sws_ctx, (const uint8_t * const*)src_data,

@@ -7,6 +7,7 @@
 #include <QComboBox>
 
 #define MAX_FORMAT_LENGTH 256
+#define PREVIEW_SIZE 100
 
 class YuvTool : public QWidget
 {
@@ -38,9 +39,8 @@ private:
     QGroupBox *inputGroupBox;
 
     QGroupBox *previewGroupBox;
-    QVBoxLayout *previewLayout;
-    QLabel *previewLabel;
-    QList<QLabel *> previewLables;
+    QHBoxLayout *previewLayout;
+    QList<QLabel *> previewLabels;
 
     QGroupBox *imageGroupBox;
     QVBoxLayout *imageLayout;
