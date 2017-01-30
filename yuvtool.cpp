@@ -37,20 +37,28 @@ YuvTool::YuvTool(QWidget *parent)
     mainLayout->addWidget(inputGroupBox);
 
     // preview
-    previewGroupBox = new QGroupBox(tr("Preview"));
-    previewLayout = new QHBoxLayout();
     QLabel *label = new QLabel;
     label->setFixedSize(PREVIEW_SIZE, PREVIEW_SIZE);
-    previewLayout->addWidget(label);
     previewLabels.append(label);
-    previewGroupBox->setLayout(previewLayout);
+    previewLayout = new QHBoxLayout();
+    previewLayout->addWidget(label);
+    previewWidget = new QWidget;
+    previewWidget->setLayout(previewLayout);
+    previewScrollArea = new QScrollArea;
+    previewScrollArea->setWidget(previewWidget);
+    previewScrollArea->setVisible(true);
+    previewScrollArea->setWidgetResizable(true);
+    previewOutLayout = new QVBoxLayout;
+    previewOutLayout->addWidget(previewScrollArea);
+    previewGroupBox = new QGroupBox(tr("Preview"));
+    previewGroupBox->setLayout(previewOutLayout);
     mainLayout->addWidget(previewGroupBox);
 
     // image
     imageGroupBox = new QGroupBox(tr("Image"));
-    imageLayout = new QVBoxLayout();
-    scrollArea = new QScrollArea;
-    imageLabel = new QLabel;
+    imageLayout = new QVBoxLayout(this);
+    scrollArea = new QScrollArea(this);
+    imageLabel = new QLabel(this);
     imageLabel->setAlignment(Qt::AlignCenter);
     scrollArea->setVisible(true);
     scrollArea->setWidgetResizable(true);

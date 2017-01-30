@@ -39,6 +39,9 @@ private:
     QGroupBox *inputGroupBox;
 
     QGroupBox *previewGroupBox;
+    QVBoxLayout *previewOutLayout;
+    QScrollArea *previewScrollArea;
+    QWidget *previewWidget;
     QHBoxLayout *previewLayout;
     QList<QLabel *> previewLabels;
 
