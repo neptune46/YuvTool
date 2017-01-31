@@ -27,6 +27,8 @@ private:
     int picWidth;
     int picHeight;
     char yuvFormat[MAX_FORMAT_LENGTH];
+    int curFrameIndex;
+    int totalFrameNum;
 
     QPushButton *openButton;
     QLabel *labelFormat;

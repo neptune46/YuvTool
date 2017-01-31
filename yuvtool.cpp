@@ -3,7 +3,7 @@
 
 #include <qmath.h>
 
-const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt, int dst_w, int dst_h, int idx_frame);
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt, int dst_w, int dst_h, int frame_idx, int* total_frame);
 
 YuvTool::YuvTool(QWidget *parent)
     : QWidget(parent)
@@ -11,6 +11,9 @@ YuvTool::YuvTool(QWidget *parent)
     setWindowTitle(tr("YuvTool"));
     QSize resolution = QGuiApplication::primaryScreen()->availableSize();
     resize(QGuiApplication::primaryScreen()->availableSize() * 6 / 10);
+
+    curFrameIndex = 0;
+    totalFrameNum = 0;
 
     mainLayout = new QVBoxLayout();
 
@@ -128,10 +131,16 @@ void YuvTool::refreshImage()
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
 
-    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, picWidth, picHeight, 0);
+    curFrameIndex = 1;
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, picWidth, picHeight, 0, &totalFrameNum);
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));
+
+    QString curFrameText = QString::number(curFrameIndex);
+    curFrameText += "/";
+    curFrameText += QString::number(totalFrameNum);
+    labelCurFrameIndex->setText(curFrameText);
 }
 
 void YuvTool::refreshPreview()
@@ -154,11 +163,11 @@ void YuvTool::refreshPreview()
     int bytesPerLine = previewWidth * 3;
 
 
-    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame++);
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame++, &totalFrameNum);
     QImage image(data, previewWidth, previewHeight, bytesPerLine, format);
     previewLabels[0]->setPixmap(QPixmap::fromImage(image));
 
-    while ((data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame)) != NULL)
+    while ((data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame, &totalFrameNum)) != NULL)
     {
         QImage image2(data, previewWidth, previewHeight, bytesPerLine, format);
         QLabel *label = new QLabel;

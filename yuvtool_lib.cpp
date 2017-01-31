@@ -116,7 +116,7 @@ end:
 }
 
 int load_yuv_image(const char *filename, uint8_t *data[4], int linesize[4],
-    int width, int height, AVPixelFormat pix_fmt, int frame_index)
+    int width, int height, AVPixelFormat pix_fmt, int frame_index, int* total_frame)
 {
     FILE *fp;
     int file_size;
@@ -159,11 +159,13 @@ int load_yuv_image(const char *filename, uint8_t *data[4], int linesize[4],
         break;
     }
 
+    *total_frame = file_size / frame_size;
+
     fclose(fp);
     return 0;
 }
 
-const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt, int dst_w, int dst_h, int frame_idx)
+const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_fmt, int dst_w, int dst_h, int frame_idx, int* total_frame)
 {
     uint8_t *src_data[4] = {};
     uint8_t *dst_data[4] = {};
@@ -197,7 +199,7 @@ const uchar* yuv2rgb(const char* src_filename, int src_w, int src_h, char* src_f
         goto end;
     }
 
-    if ((ret = load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, frame_idx)) < 0) {
+    if ((ret = load_yuv_image(src_filename, src_data, src_linesize, src_w, src_h, src_pix_fmt, frame_idx, total_frame)) < 0) {
         fprintf(stderr, "Cannot load source yuv file\n");
         goto end;
     }
