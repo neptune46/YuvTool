@@ -37,22 +37,22 @@ YuvTool::YuvTool(QWidget *parent)
     mainLayout->addWidget(inputGroupBox);
 
     // preview
-    QLabel *label = new QLabel;
-    label->setFixedSize(PREVIEW_SIZE, PREVIEW_SIZE);
-    previewLabels.append(label);
-    previewLayout = new QHBoxLayout();
-    previewLayout->addWidget(label);
-    previewWidget = new QWidget;
-    previewWidget->setLayout(previewLayout);
-    previewScrollArea = new QScrollArea;
-    previewScrollArea->setWidget(previewWidget);
-    previewScrollArea->setVisible(true);
-    previewScrollArea->setWidgetResizable(true);
-    previewOutLayout = new QVBoxLayout;
-    previewOutLayout->addWidget(previewScrollArea);
-    previewGroupBox = new QGroupBox(tr("Preview"));
-    previewGroupBox->setLayout(previewOutLayout);
-    mainLayout->addWidget(previewGroupBox);
+    //QLabel *label = new QLabel;
+    //label->setFixedSize(PREVIEW_SIZE, PREVIEW_SIZE);
+    //previewLabels.append(label);
+    //previewLayout = new QHBoxLayout();
+    //previewLayout->addWidget(label);
+    //previewWidget = new QWidget;
+    //previewWidget->setLayout(previewLayout);
+    //previewScrollArea = new QScrollArea;
+    //previewScrollArea->setWidget(previewWidget);
+    //previewScrollArea->setVisible(true);
+    //previewScrollArea->setWidgetResizable(true);
+    //previewOutLayout = new QVBoxLayout;
+    //previewOutLayout->addWidget(previewScrollArea);
+    //previewGroupBox = new QGroupBox(tr("Preview"));
+    //previewGroupBox->setLayout(previewOutLayout);
+    //mainLayout->addWidget(previewGroupBox);
 
     // image
     imageGroupBox = new QGroupBox(tr("Image"));
@@ -113,7 +113,7 @@ void YuvTool::refreshDisplay()
 {
     getYuvProperty();
     refreshImage();
-    refreshPreview();
+    //refreshPreview();
 }
 
 void YuvTool::refreshImage()
@@ -146,6 +146,7 @@ void YuvTool::refreshPreview()
         previewWidth = (picWidth * previewHeight) / picHeight;
     }
     int bytesPerLine = previewWidth * 3;
+
 
     data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, previewWidth, previewHeight, indexFrame++);
     QImage image(data, previewWidth, previewHeight, bytesPerLine, format);
