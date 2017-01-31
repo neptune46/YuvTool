@@ -15,9 +15,9 @@ YuvTool::YuvTool(QWidget *parent)
     mainLayout = new QVBoxLayout();
 
     // Input area
-    inputGroupBox = new QGroupBox(tr("Input Area"));
+    inputGroupBox = new QGroupBox(tr("Input"));
     inputLayout = new QHBoxLayout();
-    openButton = new QPushButton(tr("Open Images"));
+    openButton = new QPushButton(tr("Open YUV"));
     labelFormat = new QLabel(tr("Format"));
     labelWidth = new QLabel(tr("Width:"));
     labelHeight = new QLabel(tr("Height:"));
@@ -26,6 +26,9 @@ YuvTool::YuvTool(QWidget *parent)
     comboBoxFormat->addItem(tr("NV12"));
     editWidth = new QLineEdit("480");
     editHeight = new QLineEdit("360");
+    btnPrevFrame = new QPushButton(tr("PrevFrame"));
+    btnNextFrame = new QPushButton(tr("NextFrame"));
+    labelCurFrameIndex = new QLabel(tr("0/0"));
     inputLayout->addWidget(openButton);
     inputLayout->addWidget(labelFormat);
     inputLayout->addWidget(comboBoxFormat);
@@ -33,6 +36,9 @@ YuvTool::YuvTool(QWidget *parent)
     inputLayout->addWidget(editWidth);
     inputLayout->addWidget(labelHeight);
     inputLayout->addWidget(editHeight);
+    inputLayout->addWidget(btnPrevFrame);
+    inputLayout->addWidget(btnNextFrame);
+    inputLayout->addWidget(labelCurFrameIndex);
     inputGroupBox->setLayout(inputLayout);
     mainLayout->addWidget(inputGroupBox);
 

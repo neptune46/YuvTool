@@ -37,6 +37,9 @@ private:
     QLineEdit *editHeight;
     QHBoxLayout *inputLayout;
     QGroupBox *inputGroupBox;
+    QPushButton *btnPrevFrame;
+    QPushButton *btnNextFrame;
+    QLabel *labelCurFrameIndex;
 
     QGroupBox *previewGroupBox;
     QVBoxLayout *previewOutLayout;
