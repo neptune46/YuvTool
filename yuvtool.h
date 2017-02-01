@@ -22,8 +22,9 @@ public:
     void refreshPreview();
     void refreshImage();
 public slots:
-void gotoPrevFrame();
-void gotoNextFrame();
+    void gotoPrevFrame();
+    void gotoNextFrame();
+    void gotoSpecifiedFrame();
 
 private:
     QString yuvFilePath;
@@ -34,12 +35,14 @@ private:
     int totalFrameNum;
 
     QPushButton *openButton;
+    QComboBox *comboBoxFormat;
     QLabel *labelFormat;
     QLabel *labelWidth;
     QLabel *labelHeight;
-    QComboBox *comboBoxFormat;
+    QLabel *labelFrameIdx;
     QLineEdit *editWidth;
     QLineEdit *editHeight;
+    QLineEdit *editFrameIdx;
     QHBoxLayout *inputLayout;
     QGroupBox *inputGroupBox;
     QPushButton *btnPrevFrame;

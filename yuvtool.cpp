@@ -22,13 +22,15 @@ YuvTool::YuvTool(QWidget *parent)
     inputLayout = new QHBoxLayout();
     openButton = new QPushButton(tr("Open YUV"));
     labelFormat = new QLabel(tr("Format"));
-    labelWidth = new QLabel(tr("Width:"));
-    labelHeight = new QLabel(tr("Height:"));
     comboBoxFormat = new QComboBox;
     comboBoxFormat->addItem(tr("YUV420"));
     comboBoxFormat->addItem(tr("NV12"));
+    labelWidth = new QLabel(tr("Width:"));
+    labelHeight = new QLabel(tr("Height:"));
+    labelFrameIdx = new QLabel(tr("Frame#:"));
     editWidth = new QLineEdit("480");
     editHeight = new QLineEdit("360");
+    editFrameIdx = new QLineEdit("1");
     btnPrevFrame = new QPushButton(tr("PrevFrame"));
     btnNextFrame = new QPushButton(tr("NextFrame"));
     labelCurFrameIndex = new QLabel(tr("0/0"));
@@ -39,6 +41,8 @@ YuvTool::YuvTool(QWidget *parent)
     inputLayout->addWidget(editWidth);
     inputLayout->addWidget(labelHeight);
     inputLayout->addWidget(editHeight);
+    inputLayout->addWidget(labelFrameIdx);
+    inputLayout->addWidget(editFrameIdx);
     inputLayout->addWidget(btnPrevFrame);
     inputLayout->addWidget(btnNextFrame);
     inputLayout->addWidget(labelCurFrameIndex);
@@ -82,6 +86,7 @@ YuvTool::YuvTool(QWidget *parent)
     connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshDisplay()));
     connect(editWidth, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
     connect(editHeight, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
+    connect(editFrameIdx, SIGNAL(returnPressed()), SLOT(gotoSpecifiedFrame()));
     connect(btnPrevFrame, SIGNAL(clicked()), SLOT(gotoPrevFrame()));
     connect(btnNextFrame, SIGNAL(clicked()), SLOT(gotoNextFrame()));
 }
@@ -92,6 +97,7 @@ void YuvTool::gotoPrevFrame()
     {
         curFrameIndex--;
         refreshImage();
+        editFrameIdx->setText(QString::number(curFrameIndex));
         btnNextFrame->setEnabled(true);
     }
     else
@@ -106,11 +112,24 @@ void YuvTool::gotoNextFrame()
     {
         curFrameIndex++;
         refreshImage();
+        editFrameIdx->setText(QString::number(curFrameIndex));
         btnPrevFrame->setEnabled(true);
     }
     else
     {
         btnNextFrame->setEnabled(false);
+    }
+}
+
+void YuvTool::gotoSpecifiedFrame()
+{
+    getYuvProperty();
+    if (curFrameIndex >=1 && curFrameIndex <= totalFrameNum)
+    {
+        refreshImage();
+    } 
+    else
+    {
     }
 }
 
@@ -141,6 +160,7 @@ void YuvTool::getYuvProperty()
 {
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
+    curFrameIndex = editFrameIdx->text().toInt();
     QString cbFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
     QByteArray ba = cbFormat.toLatin1();
     int length = strlen(ba.data());
