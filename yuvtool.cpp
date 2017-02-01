@@ -36,7 +36,7 @@ YuvTool::YuvTool(QWidget *parent)
     labelCurFrameIndex = new QLabel(tr("[0/0]"));
     labelScale = new QLabel(tr("Scale(100%)"));
     scaleSlider = new QSlider(Qt::Horizontal);
-    //scaleSlider->setFocusPolicy(Qt::StrongFocus);
+    scaleSlider->setFocusPolicy(Qt::StrongFocus);
     //scaleSlider->setTickPosition(QSlider::TicksBothSides);
     scaleSlider->setMinimum(1);
     scaleSlider->setMaximum(200);
@@ -165,6 +165,7 @@ void YuvTool::open()
         return;
 
     yuvFilePath = files[0];
+    curFrameIndex = 1;
 
     refreshDisplay();
 }
