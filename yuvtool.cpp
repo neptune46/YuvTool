@@ -12,8 +12,8 @@ YuvTool::YuvTool(QWidget *parent)
     QSize resolution = QGuiApplication::primaryScreen()->availableSize();
     resize(QGuiApplication::primaryScreen()->availableSize() * 6 / 10);
 
-    curFrameIndex = 0;
-    totalFrameNum = 0;
+    curFrameIndex = 1;
+    totalFrameNum = 1;
 
     mainLayout = new QVBoxLayout();
 
@@ -82,6 +82,36 @@ YuvTool::YuvTool(QWidget *parent)
     connect(comboBoxFormat, SIGNAL(currentIndexChanged(int)), SLOT(refreshDisplay()));
     connect(editWidth, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
     connect(editHeight, SIGNAL(returnPressed()), SLOT(refreshDisplay()));
+    connect(btnPrevFrame, SIGNAL(clicked()), SLOT(gotoPrevFrame()));
+    connect(btnNextFrame, SIGNAL(clicked()), SLOT(gotoNextFrame()));
+}
+
+void YuvTool::gotoPrevFrame()
+{
+    if (curFrameIndex > 1)
+    {
+        curFrameIndex--;
+        refreshImage();
+        btnNextFrame->setEnabled(true);
+    }
+    else
+    {
+        btnPrevFrame->setEnabled(false);
+    }
+}
+
+void YuvTool::gotoNextFrame()
+{
+    if (curFrameIndex < totalFrameNum)
+    {
+        curFrameIndex++;
+        refreshImage();
+        btnPrevFrame->setEnabled(true);
+    }
+    else
+    {
+        btnNextFrame->setEnabled(false);
+    }
 }
 
 YuvTool::~YuvTool()
@@ -102,9 +132,9 @@ void YuvTool::open()
 
     refreshDisplay();
 
-    scrollArea->setVisible(true);
+    //scrollArea->setVisible(true);
 
-    openButton->setEnabled(true);
+    //openButton->setEnabled(true);
 }
 
 void YuvTool::getYuvProperty()
@@ -131,8 +161,9 @@ void YuvTool::refreshImage()
     int bytesPerLine = picWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
 
-    curFrameIndex = 1;
-    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, picWidth, picHeight, 0, &totalFrameNum);
+    data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, 
+        picWidth, picHeight, (curFrameIndex - 1), &totalFrameNum);
+
     QImage image(data, picWidth, picHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));

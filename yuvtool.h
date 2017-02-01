@@ -21,6 +21,9 @@ public:
     void refreshDisplay();
     void refreshPreview();
     void refreshImage();
+public slots:
+void gotoPrevFrame();
+void gotoNextFrame();
 
 private:
     QString yuvFilePath;
