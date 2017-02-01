@@ -165,9 +165,14 @@ void YuvTool::open()
         return;
 
     yuvFilePath = files[0];
+    
+
+    getYuvProperty();
+
+    // always display the first frame for new image
     curFrameIndex = 1;
 
-    refreshDisplay();
+    refreshImage();
 }
 
 void YuvTool::getYuvProperty()
