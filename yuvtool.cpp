@@ -33,7 +33,15 @@ YuvTool::YuvTool(QWidget *parent)
     editFrameIdx = new QLineEdit("1");
     btnPrevFrame = new QPushButton(tr("PrevFrame"));
     btnNextFrame = new QPushButton(tr("NextFrame"));
-    labelCurFrameIndex = new QLabel(tr("0/0"));
+    labelCurFrameIndex = new QLabel(tr("[0/0]"));
+    labelScale = new QLabel(tr("Scale(100%)"));
+    scaleSlider = new QSlider(Qt::Horizontal);
+    //scaleSlider->setFocusPolicy(Qt::StrongFocus);
+    //scaleSlider->setTickPosition(QSlider::TicksBothSides);
+    scaleSlider->setMinimum(1);
+    scaleSlider->setMaximum(200);
+    scaleSlider->setSingleStep(10);
+    scaleSlider->setValue(100);
     inputLayout->addWidget(openButton);
     inputLayout->addWidget(labelFormat);
     inputLayout->addWidget(comboBoxFormat);
@@ -44,8 +52,10 @@ YuvTool::YuvTool(QWidget *parent)
     inputLayout->addWidget(labelFrameIdx);
     inputLayout->addWidget(editFrameIdx);
     inputLayout->addWidget(btnPrevFrame);
-    inputLayout->addWidget(btnNextFrame);
     inputLayout->addWidget(labelCurFrameIndex);
+    inputLayout->addWidget(btnNextFrame);
+    inputLayout->addWidget(labelScale);
+    inputLayout->addWidget(scaleSlider);
     inputGroupBox->setLayout(inputLayout);
     mainLayout->addWidget(inputGroupBox);
 
@@ -89,6 +99,7 @@ YuvTool::YuvTool(QWidget *parent)
     connect(editFrameIdx, SIGNAL(returnPressed()), SLOT(gotoSpecifiedFrame()));
     connect(btnPrevFrame, SIGNAL(clicked()), SLOT(gotoPrevFrame()));
     connect(btnNextFrame, SIGNAL(clicked()), SLOT(gotoNextFrame()));
+    connect(scaleSlider, SIGNAL(valueChanged(int)), SLOT(setScaleFactor(int)));
 }
 
 void YuvTool::gotoPrevFrame()
@@ -128,9 +139,15 @@ void YuvTool::gotoSpecifiedFrame()
     {
         refreshImage();
     } 
-    else
-    {
-    }
+}
+
+void YuvTool::setScaleFactor(int factor)
+{
+    QString text = "Scale[";
+    text += QString::number(factor);
+    text += "%]";
+    labelScale->setText(text);
+    refreshDisplay();
 }
 
 YuvTool::~YuvTool()
@@ -150,16 +167,15 @@ void YuvTool::open()
     yuvFilePath = files[0];
 
     refreshDisplay();
-
-    //scrollArea->setVisible(true);
-
-    //openButton->setEnabled(true);
 }
 
 void YuvTool::getYuvProperty()
 {
     picWidth = editWidth->text().toInt();
     picHeight = editHeight->text().toInt();
+    int factor = scaleSlider->value();
+    dstWidth = factor * picWidth / 100;
+    dstHeight = factor * picHeight / 100;
     curFrameIndex = editFrameIdx->text().toInt();
     QString cbFormat = comboBoxFormat->itemText(comboBoxFormat->currentIndex());
     QByteArray ba = cbFormat.toLatin1();
@@ -178,19 +194,19 @@ void YuvTool::refreshDisplay()
 void YuvTool::refreshImage()
 {
     const uchar *data = NULL;
-    int bytesPerLine = picWidth * 3;
+    int bytesPerLine = dstWidth * 3;
     QImage::Format format = QImage::Format_RGB888;
 
     data = yuv2rgb(yuvFilePath.toStdString().c_str(), picWidth, picHeight, yuvFormat, 
-        picWidth, picHeight, (curFrameIndex - 1), &totalFrameNum);
+        dstWidth, dstHeight, (curFrameIndex - 1), &totalFrameNum);
 
-    QImage image(data, picWidth, picHeight, bytesPerLine, format);
+    QImage image(data, dstWidth, dstHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));
 
-    QString curFrameText = QString::number(curFrameIndex);
+    QString curFrameText = "[" + QString::number(curFrameIndex);
     curFrameText += "/";
-    curFrameText += QString::number(totalFrameNum);
+    curFrameText += QString::number(totalFrameNum) + "]";
     labelCurFrameIndex->setText(curFrameText);
 }
 

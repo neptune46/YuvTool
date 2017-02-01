@@ -25,11 +25,14 @@ public slots:
     void gotoPrevFrame();
     void gotoNextFrame();
     void gotoSpecifiedFrame();
+    void setScaleFactor(int factor);
 
 private:
     QString yuvFilePath;
     int picWidth;
     int picHeight;
+    int dstWidth;
+    int dstHeight;
     char yuvFormat[MAX_FORMAT_LENGTH];
     int curFrameIndex;
     int totalFrameNum;
@@ -40,9 +43,11 @@ private:
     QLabel *labelWidth;
     QLabel *labelHeight;
     QLabel *labelFrameIdx;
+    QLabel *labelScale;
     QLineEdit *editWidth;
     QLineEdit *editHeight;
     QLineEdit *editFrameIdx;
+    QSlider *scaleSlider;
     QHBoxLayout *inputLayout;
     QGroupBox *inputGroupBox;
     QPushButton *btnPrevFrame;
