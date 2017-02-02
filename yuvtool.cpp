@@ -31,13 +31,12 @@ YuvTool::YuvTool(QWidget *parent)
     editWidth = new QLineEdit("480");
     editHeight = new QLineEdit("360");
     editFrameIdx = new QLineEdit("1");
-    btnPrevFrame = new QPushButton(tr("PrevFrame"));
-    btnNextFrame = new QPushButton(tr("NextFrame"));
-    labelCurFrameIndex = new QLabel(tr("[0/0]"));
     labelScale = new QLabel(tr("Scale(100%)"));
     scaleSlider = new QSlider(Qt::Horizontal);
+    btnPrevFrame = new QPushButton(tr("PrevFrame"));
+    labelCurFrameIndex = new QLabel(tr("[0/0]"));
+    btnNextFrame = new QPushButton(tr("NextFrame"));
     scaleSlider->setFocusPolicy(Qt::StrongFocus);
-    //scaleSlider->setTickPosition(QSlider::TicksBothSides);
     scaleSlider->setMinimum(1);
     scaleSlider->setMaximum(200);
     scaleSlider->setSingleStep(10);
@@ -51,11 +50,11 @@ YuvTool::YuvTool(QWidget *parent)
     inputLayout->addWidget(editHeight);
     inputLayout->addWidget(labelFrameIdx);
     inputLayout->addWidget(editFrameIdx);
+    inputLayout->addWidget(labelScale);
+    inputLayout->addWidget(scaleSlider);
     inputLayout->addWidget(btnPrevFrame);
     inputLayout->addWidget(labelCurFrameIndex);
     inputLayout->addWidget(btnNextFrame);
-    inputLayout->addWidget(labelScale);
-    inputLayout->addWidget(scaleSlider);
     inputGroupBox->setLayout(inputLayout);
     mainLayout->addWidget(inputGroupBox);
 
@@ -107,8 +106,8 @@ void YuvTool::gotoPrevFrame()
     if (curFrameIndex > 1)
     {
         curFrameIndex--;
-        refreshImage();
         editFrameIdx->setText(QString::number(curFrameIndex));
+        refreshDisplay();
         btnNextFrame->setEnabled(true);
     }
     else
@@ -122,8 +121,8 @@ void YuvTool::gotoNextFrame()
     if (curFrameIndex < totalFrameNum)
     {
         curFrameIndex++;
-        refreshImage();
         editFrameIdx->setText(QString::number(curFrameIndex));
+        refreshDisplay();
         btnPrevFrame->setEnabled(true);
     }
     else
@@ -134,10 +133,9 @@ void YuvTool::gotoNextFrame()
 
 void YuvTool::gotoSpecifiedFrame()
 {
-    getYuvProperty();
     if (curFrameIndex >=1 && curFrameIndex <= totalFrameNum)
     {
-        refreshImage();
+        refreshDisplay();
     } 
 }
 
@@ -147,6 +145,7 @@ void YuvTool::setScaleFactor(int factor)
     text += QString::number(factor);
     text += "%]";
     labelScale->setText(text);
+
     refreshDisplay();
 }
 
@@ -168,12 +167,12 @@ void YuvTool::open()
 
     setWindowTitle("YuvTool [" + yuvFilePath + "]");
 
-    getYuvProperty();
-
     // always display the first frame for new image
     curFrameIndex = 1;
+    editFrameIdx->setText(QString::number(curFrameIndex));
+    scaleSlider->setValue(100);
 
-    refreshImage();
+    refreshDisplay();
 }
 
 void YuvTool::getYuvProperty()
@@ -194,8 +193,19 @@ void YuvTool::getYuvProperty()
 void YuvTool::refreshDisplay()
 {
     getYuvProperty();
+
     refreshImage();
-    //refreshPreview();
+
+    QString curFrameText = "[" + QString::number(curFrameIndex);
+    curFrameText += "/";
+    curFrameText += QString::number(totalFrameNum) + "]";
+    labelCurFrameIndex->setText(curFrameText);
+    editFrameIdx->setText(QString::number(curFrameIndex));
+
+    QString text = "Scale[";
+    text += QString::number(scaleSlider->value());
+    text += "%]";
+    labelScale->setText(text);
 }
 
 void YuvTool::refreshImage()
@@ -210,11 +220,6 @@ void YuvTool::refreshImage()
     QImage image(data, dstWidth, dstHeight, bytesPerLine, format);
 
     imageLabel->setPixmap(QPixmap::fromImage(image));
-
-    QString curFrameText = "[" + QString::number(curFrameIndex);
-    curFrameText += "/";
-    curFrameText += QString::number(totalFrameNum) + "]";
-    labelCurFrameIndex->setText(curFrameText);
 }
 
 void YuvTool::refreshPreview()
