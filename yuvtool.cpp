@@ -165,7 +165,8 @@ void YuvTool::open()
         return;
 
     yuvFilePath = files[0];
-    
+
+    setWindowTitle("YuvTool [" + yuvFilePath + "]");
 
     getYuvProperty();
 
