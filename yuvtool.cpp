@@ -108,11 +108,6 @@ void YuvTool::gotoPrevFrame()
         curFrameIndex--;
         editFrameIdx->setText(QString::number(curFrameIndex));
         refreshDisplay();
-        btnNextFrame->setEnabled(true);
-    }
-    else
-    {
-        btnPrevFrame->setEnabled(false);
     }
 }
 
@@ -123,11 +118,6 @@ void YuvTool::gotoNextFrame()
         curFrameIndex++;
         editFrameIdx->setText(QString::number(curFrameIndex));
         refreshDisplay();
-        btnPrevFrame->setEnabled(true);
-    }
-    else
-    {
-        btnNextFrame->setEnabled(false);
     }
 }
 
@@ -206,6 +196,24 @@ void YuvTool::refreshDisplay()
     text += QString::number(scaleSlider->value());
     text += "%]";
     labelScale->setText(text);
+
+    if (curFrameIndex <= 1)
+    {
+        btnPrevFrame->setEnabled(false);
+    }
+    else
+    {
+        btnPrevFrame->setEnabled(true);
+    }
+
+    if (curFrameIndex >= totalFrameNum)
+    {
+        btnNextFrame->setEnabled(false);
+    }
+    else
+    {
+        btnNextFrame->setEnabled(true);
+    }
 }
 
 void YuvTool::refreshImage()
