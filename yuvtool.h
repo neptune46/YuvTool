@@ -19,7 +19,6 @@ public:
     void open();
     void getYuvProperty();
     void refreshDisplay();
-    void refreshPreview();
     void refreshImage();
 public slots:
     void gotoPrevFrame();
@@ -53,13 +52,6 @@ private:
     QPushButton *btnPrevFrame;
     QPushButton *btnNextFrame;
     QLabel *labelCurFrameIndex;
-
-    QGroupBox *previewGroupBox;
-    QVBoxLayout *previewOutLayout;
-    QScrollArea *previewScrollArea;
-    QWidget *previewWidget;
-    QHBoxLayout *previewLayout;
-    QList<QLabel *> previewLabels;
 
     QGroupBox *imageGroupBox;
     QVBoxLayout *imageLayout;
